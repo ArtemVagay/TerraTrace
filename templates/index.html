@@ -57,6 +57,13 @@
             <span id="fileHint">или нажми, чтобы выбрать файл</span>
             <span class="drop-meta">До 5 МиБ · не более 50 000 строк</span>
           </label>
+                <input
+        id="logFile"
+        class="visually-hidden"
+        type="file"
+        accept=".log,.txt"
+        aria-label="Выбрать журнал .log или .txt"
+      >
           <button id="clearFile" class="text-button selected-file-clear" type="button" hidden>Убрать файл</button>
         </div>
         <div id="textPanel" role="tabpanel" aria-labelledby="textTab" hidden><label class="visually-hidden" for="logText">Текст журнала</label><textarea id="logText" spellcheck="false" placeholder="Вставь строки из client.log или server.log…"></textarea></div>
