@@ -1,0 +1,54 @@
+# Учебный синтетический журнал TerraTrace. Не отчёт о реальном моде.
+[18:24:00.001] [Main Thread/INFO] [tML]: Starting tModLoader client 2026.10.3.0
+[18:24:00.050] [Main Thread/INFO] [tML]: Terraria v1.4.4.9
+[18:24:01.100] [Main Thread/INFO] [tML]: Loading Mod: AstralBosses (v0.1.0)
+[18:24:01.200] [Main Thread/INFO] [tML]: Loading Mod: CrystalFX (v0.2.0)
+[18:24:03.800] [Main Thread/INFO] [AstralBosses]: Test started: phase two
+[18:24:10.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 125
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:11.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 126
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:12.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 127
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:13.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 128
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:14.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 129
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:15.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 130
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:16.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 131
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:17.100] [Main Thread/ERROR] [AstralBosses]: Failed to update boss AI
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AstralBosses.Content.NPCs.AstralWarden.UpdateSecondPhase() in C:\Users\Modder\Projects\AstralBosses\AstralWarden.cs:line 132
+   at Terraria.ModLoader.NPCLoader.AI(NPC npc)
+[18:24:22.400] [Main Thread/ERROR] [AstralBosses]: Texture not found: AstralBosses/Assets/Projectiles/StarShard
+Terraria.ModLoader.Exceptions.MissingResourceException: Requested asset does not exist.
+   at AstralBosses.Content.Projectiles.StarShard.Load()
+[18:24:23.400] [Main Thread/ERROR] [AstralBosses]: Texture not found: AstralBosses/Assets/Projectiles/StarShard
+Terraria.ModLoader.Exceptions.MissingResourceException: Requested asset does not exist.
+   at AstralBosses.Content.Projectiles.StarShard.Load()
+[18:24:24.400] [Main Thread/ERROR] [AstralBosses]: Texture not found: AstralBosses/Assets/Projectiles/StarShard
+Terraria.ModLoader.Exceptions.MissingResourceException: Requested asset does not exist.
+   at AstralBosses.Content.Projectiles.StarShard.Load()
+[18:24:28.300] [Main Thread/WARN] [CrystalFX]: Shader parameter uGlowStrength was not found in effect WardenAura
+   at CrystalFX.Effects.WardenAura.Apply()
+[18:24:30.100] [Main Thread/ERROR] [CrystalFX]: Failed to call dependency
+System.MissingMethodException: Method not found: AstralBosses.Api.GetPhase()
+   at CrystalFX.Compatibility.AstralAdapter.Update()
+[18:24:31.000] [Network/INFO] [Network]: Client 192.168.1.42 disconnected
+[18:24:33.000] [Main Thread/INFO] [tML]: Test finished

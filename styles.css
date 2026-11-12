@@ -1,0 +1,2347 @@
+/* ==========================================================================
+   TERRARIA UI THEME v2 — Симметричные рамки инвентаря, 1:1 пиксельные спрайты,
+   смена фазы Глаза Ктулху по наведению и живая анимация боссов/HUD.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  /* Палитра окон инвентаря Terraria */
+  --bg: #151c36;
+  --bg-deep: #0e1326;
+  --sidebar: #222e59;
+  --surface: #31417d;
+  --surface-2: #3d5199;
+  --slot-bg: #232f5c;
+  --line: #0b0f21;
+  --line-highlight: #5c75d6;
+
+  /* Цвета редкости предметов Terraria */
+  --text: #ffffff;
+  --muted: #bac8f5;
+  --faint: #7f94d4;
+  --accent: #ffe84c;          /* Золотой цвет меню Terraria */
+  --accent-strong: #ffae00;
+  --red: #ff5263;             /* Crimson / Багрянец */
+  --amber: #ffd24c;
+  --green: #68e370;           /* Изумрудный / Лесной биом */
+
+  --radius: 6px;
+  --sidebar-width: 245px;
+  --font: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-pixel: "Press Start 2P", monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Официальные спрайты с terraria.wiki.gg */
+  --sprite-tree: url("https://terraria.wiki.gg/images/Tree_icon.png");
+  --sprite-eoc-p1: url("https://terraria.wiki.gg/images/Eye_of_Cthulhu_%28Phase_1%29.gif");
+  --sprite-eoc-p2: url("https://terraria.wiki.gg/images/Eye_of_Cthulhu_%28Phase_2%29.gif");
+  --sprite-skeletron: url("https://terraria.wiki.gg/images/Skeletron_Head.png");
+  --sprite-chest: url("https://terraria.wiki.gg/images/Gold_Chest.png");
+  --sprite-heart: url("https://terraria.wiki.gg/images/Heart.png");
+  --sprite-star: url("https://terraria.wiki.gg/images/Mana_Star.png");
+  --sprite-guide: url("https://terraria.wiki.gg/images/Guide.png");
+
+  /* Симметричная рамка панелей Terraria (без перекоса в одну сторону) */
+  --terraria-panel-shadow:
+    inset 0 0 0 2px #5c75d6,
+    inset 0 2px 0 #7c94f0,
+    0 4px 0 #090c1a;
+
+  /* Симметричная рамка внутренних слотов */
+  --terraria-slot-shadow:
+    inset 0 0 0 2px #4256a1,
+    inset 0 2px 4px rgba(8, 11, 24, 0.65),
+    0 2px 0 #0b0f21;
+
+  /* Золотая рамка активного слота */
+  --terraria-gold-shadow:
+    inset 0 0 0 2px #ffe84c,
+    0 0 12px rgba(255, 232, 76, 0.25),
+    0 3px 0 #090c1a;
+
+  --text-shadow: 2px 2px 0 #090c1a, -1px -1px 0 #090c1a, 1px -1px 0 #090c1a, -1px 1px 0 #090c1a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(circle at 80% 10%, rgba(74, 101, 189, 0.22), transparent 45%),
+    linear-gradient(to bottom, #1b2752 0%, #111833 450px, #0e1326 100%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0px, rgba(255, 255, 255, 0.018) 1px, transparent 1px, transparent 16px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0px, rgba(255, 255, 255, 0.018) 1px, transparent 1px, transparent 16px);
+  color: var(--text);
+  font: 500 14px/1.55 var(--font);
+  text-shadow: var(--text-shadow);
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  text-shadow: inherit;
+}
+
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+  filter: grayscale(0.8);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, label[tabindex]:focus-visible, summary:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 4px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  filter: drop-shadow(2px 2px 0 #090c1a);
+}
+
+.icon.small {
+  width: 16px;
+  height: 16px;
+}
+
+.svg-library {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   SIDEBAR (Боковая панель с качающимся Деревом и Гидом)
+   ========================================================================== */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-width);
+  background: linear-gradient(180deg, #283669 0%, #1d274d 100%);
+  border-right: 3px solid #0b0f21;
+  box-shadow: inset -2px 0 0 #5268bf;
+  padding: 26px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 6px;
+  color: var(--accent);
+}
+
+.brand-light {
+  font-weight: 700;
+  color: var(--green);
+}
+
+.brand-mark {
+  display: none !important;
+}
+
+.brand:hover .brand-mark {
+  animation: treeChop 0.35s ease-in-out infinite;
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.brand-mark .icon {
+  display: none;
+}
+
+.sidebar-label {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin: 36px 8px 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: var(--radius);
+  border: 2px solid #0b0f21;
+  padding: 11px 12px;
+  background: var(--slot-bg);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--terraria-slot-shadow);
+  transition: background-color .12s, color .12s, transform .12s;
+}
+
+.nav-link:hover {
+  background: #354787;
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+.nav-link.active {
+  background: linear-gradient(180deg, #475db3 0%, #36488f 100%);
+  color: var(--accent);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.nav-link .icon {
+  width: 17px;
+  height: 17px;
+}
+
+/* Переливающаяся звезда маны в активном пункте меню */
+.nav-dot {
+  margin-left: auto;
+  width: 18px;
+  height: 18px;
+  background: var(--sprite-star) no-repeat center / contain;
+  border-radius: 0;
+  animation: starPulse 2s ease-in-out infinite alternate;
+}
+
+.external-mark {
+  margin-left: auto;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.sidebar-bottom {
+  border-top: 2px solid #0b0f21;
+  box-shadow: inset 0 2px 0 #4256a1;
+  margin-top: auto;
+  padding: 16px 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-bottom p {
+  font-size: 11px;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.sidebar-bottom p span {
+  display: block;
+  font-size: 10px;
+  color: var(--green);
+  margin-top: 2px;
+}
+
+.sidebar-bottom small {
+  margin-left: auto;
+  color: var(--accent);
+  font-family: var(--font-pixel);
+  font-size: 8px;
+}
+
+/* Спрайт Гида в родной пропорции с анимацией дыхания и прыжка */
+.tiny-orbit {
+  width: 26px;
+  height: 38px;
+  background: var(--sprite-guide) no-repeat center bottom / contain;
+  box-shadow: none;
+  border-radius: 0;
+  margin-right: 2px;
+  flex-shrink: 0;
+  animation: npcBob 1.8s steps(2) infinite;
+  cursor: pointer;
+}
+
+.sidebar-bottom:hover .tiny-orbit {
+  animation: npcJump 0.45s ease-out infinite alternate;
+}
+
+/* ==========================================================================
+   MAIN CONTENT & TOPBAR (Полоса здоровья с пульсирующим Сердцем)
+   ========================================================================== */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 0 44px;
+  max-width: 1660px;
+}
+
+.topbar {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #0b0f21;
+  box-shadow: 0 2px 0 #3f529c;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.topbar strong {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.breadcrumb-slash {
+  margin: 0 10px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.online-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: #ff8592;
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  box-shadow: var(--terraria-slot-shadow);
+}
+
+/* Родной размер сердца 22x22 + пульсация как в HUD Terraria */
+.online-state i {
+  width: 22px;
+  height: 22px;
+  background: var(--sprite-heart) no-repeat center / auto;
+  border-radius: 0;
+  box-shadow: none;
+  animation: heartBeat 1.2s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 32px 0 28px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--green);
+  text-transform: uppercase;
+}
+
+.eyebrow > span:not(.green-dot) {
+  width: 16px;
+  height: 16px;
+  background: var(--sprite-star) no-repeat center / contain;
+  border-radius: 0;
+  animation: starPulse 1.8s ease-in-out infinite alternate;
+}
+
+h1 {
+  font-family: var(--font-pixel);
+  font-size: 25px;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+  font-weight: 700;
+  margin: 14px 0 12px;
+  color: var(--accent);
+  text-shadow: 3px 3px 0 #090c1a, -2px -2px 0 #090c1a, 2px -2px 0 #090c1a, -2px 2px 0 #090c1a;
+}
+
+.title-dot {
+  color: var(--green);
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.guide-link {
+  margin-top: 20px;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  border-radius: var(--radius);
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-panel-shadow);
+  transition: background-color .12s, color .12s, box-shadow .12s, transform .08s;
+}
+
+.button:not(:disabled):active {
+  transform: translateY(2px);
+}
+
+.button-primary {
+  color: #ffffff;
+  background: linear-gradient(180deg, #4ca845 0%, #347a2f 100%);
+  box-shadow:
+    inset 0 0 0 2px #7be06c,
+    0 4px 0 #090c1a;
+}
+
+.button-primary:not(:disabled):hover {
+  background: linear-gradient(180deg, #5cc255 0%, #3f8f39 100%);
+  color: var(--accent);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.button-secondary {
+  background: linear-gradient(180deg, #4155a1 0%, #30407d 100%);
+  color: #ffffff;
+  box-shadow: var(--terraria-panel-shadow);
+}
+
+.button-secondary:hover {
+  background: linear-gradient(180deg, #5067bf 0%, #3b4e96 100%);
+  color: var(--accent);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.button-quiet {
+  color: var(--muted);
+  background: var(--slot-bg);
+  box-shadow: var(--terraria-slot-shadow);
+}
+
+.button-quiet:hover {
+  color: var(--accent);
+  background: #324382;
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.button.compact {
+  min-height: 34px;
+  font-size: 11px;
+  padding: 0 12px;
+  gap: 7px;
+}
+
+.button.compact .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.text-button {
+  background: none;
+  border: 0;
+  padding: 3px 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.text-button:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   PANELS & UPLOAD ZONE (Сундук с сокровищами)
+   ========================================================================== */
+.upload-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.panel {
+  background: linear-gradient(180deg, #354787 0%, #283669 100%);
+  border-radius: var(--radius);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-panel-shadow);
+}
+
+.upload-panel {
+  padding: 24px 25px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-heading, .section-title {
+  display: flex;
+  align-items: center;
+}
+
+.panel-heading {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-title {
+  gap: 10px;
+}
+
+.section-title > .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+}
+
+h2, h3, p {
+  overflow-wrap: anywhere;
+}
+
+.section-title h2 {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent);
+}
+
+.subtle-badge {
+  padding: 4px 8px;
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: 4px;
+  color: var(--green);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.input-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 16px;
+  border-bottom: 2px solid #182042;
+  padding-bottom: 10px;
+}
+
+.input-tab {
+  position: relative;
+  border: 2px solid #0b0f21;
+  border-radius: 4px;
+  background: var(--slot-bg);
+  box-shadow: var(--terraria-slot-shadow);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 14px;
+  transition: background-color .12s, color .12s;
+}
+
+.input-tab:hover {
+  color: var(--accent);
+  background: #2f3e78;
+}
+
+.input-tab.selected {
+  background: linear-gradient(180deg, #495fb5 0%, #37498f 100%);
+  color: var(--accent);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.input-tab.selected:after {
+  display: none;
+}
+
+.drop-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 188px;
+  background:
+    radial-gradient(circle at center, rgba(255, 232, 76, 0.07), transparent 60%),
+    var(--slot-bg);
+  border: 2px dashed #6b82d6;
+  box-shadow: inset 0 0 0 2px #141c3a;
+  border-radius: var(--radius);
+  text-align: center;
+  padding: 22px 14px;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, box-shadow .15s;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+  background:
+    radial-gradient(circle at center, rgba(255, 232, 76, 0.18), transparent 65%),
+    #2c3b73;
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.drop-zone.has-file {
+  border-style: solid;
+  border-color: var(--green);
+  background: #20383b;
+}
+
+/* Золотой сундук в родном масштабе 1:1 */
+.upload-icon {
+  width: 52px;
+  height: 48px;
+  border-radius: var(--radius);
+  border: 2px solid #0b0f21;
+  background: #36488f var(--sprite-chest) no-repeat center / auto;
+  box-shadow: var(--terraria-panel-shadow);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  margin-bottom: 12px;
+  transition: transform .15s, box-shadow .15s;
+}
+
+.drop-zone:hover .upload-icon {
+  animation: chestBounce 0.55s ease-in-out infinite alternate;
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.upload-icon .icon {
+  display: none;
+}
+
+.drop-zone strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.drop-zone > span:not(.upload-icon) {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.drop-zone .drop-meta {
+  margin-top: 14px !important;
+  color: var(--faint) !important;
+  font-size: 11px !important;
+}
+
+.selected-file-clear {
+  display: block;
+  margin: 8px auto -12px;
+  font-size: 11px;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 188px;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  background: #161e3b;
+  border-radius: var(--radius);
+  padding: 14px;
+  color: #e4ecff;
+  font: 12px/1.65 var(--font-mono);
+}
+
+textarea::placeholder {
+  color: #6c80bd;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.form-actions .button-primary {
+  flex: 1;
+  min-height: 44px;
+}
+
+.form-actions .button-primary .icon:last-child {
+  margin-left: auto;
+}
+
+.form-actions .button-primary .icon:first-child {
+  margin-right: auto;
+}
+
+.form-actions .button-secondary {
+  flex: .95;
+  min-height: 44px;
+}
+
+.privacy-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 15px 0 0;
+}
+
+.privacy-line .icon {
+  width: 13px;
+  height: 13px;
+  color: var(--green);
+}
+
+.form-error {
+  background: #5e1d27;
+  border: 2px solid #0b0f21;
+  box-shadow: inset 0 0 0 2px #ff6b7b;
+  color: #ffd6da;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.is-busy .upload-icon {
+  animation: chestBounce 0.4s infinite alternate ease-in-out;
+}
+
+.is-busy .button-primary .icon:first-child {
+  animation: spin 2s steps(8) infinite;
+}
+
+/* ==========================================================================
+   WORKFLOW PANEL (Глаз Ктулху: Фаза 1 -> Фаза 2 при наведении + ровный биом)
+   ========================================================================== */
+.workflow-panel {
+  position: relative;
+  padding: 24px 25px 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(120, 145, 255, 0.16), transparent 45%),
+    linear-gradient(180deg, #2d3c73 0%, #1d274f 100%);
+  box-shadow: var(--terraria-panel-shadow);
+}
+
+/* Отключаем старый псевдоэлемент, чтобы трава никогда не резала шаг 03 */
+.workflow-panel:before,
+.workflow-panel:after {
+  display: none;
+}
+
+.workflow-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 3;
+}
+
+.workflow-top .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  margin-top: 6px;
+}
+
+/* ИНТЕРАКТИВНЫЙ ГЛАЗ КТУЛХУ:
+   Наведи курсор прямо на Глаз Ктулху — он перейдёт во 2-ю фазу! */
+.mini-crystal {
+  position: absolute;
+  right: -4px;
+  top: -6px;
+  width: 88px;
+  height: 88px;
+  font-size: 0;
+  color: transparent;
+  cursor: pointer;
+  background: var(--sprite-eoc-p1) no-repeat center / contain;
+  filter: drop-shadow(3px 4px 0 #090c1a);
+  animation: bossFloat 2.4s ease-in-out infinite alternate;
+  transition: filter .15s ease;
+  z-index: 5;
+}
+
+/* Предзагрузка GIF 2-й фазы, чтобы не было пустого кадра при первом наведении */
+.mini-crystal::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  background-image: var(--sprite-eoc-p2);
+}
+
+/* Вторая фаза Глаза Ктулху при наведении курсора на него */
+.mini-crystal:hover {
+  background-image: var(--sprite-eoc-p2);
+  filter:
+    drop-shadow(0 0 10px rgba(255, 65, 85, 0.9))
+    drop-shadow(3px 4px 0 #090c1a);
+  animation: eocPhaseTwoRage 0.35s ease-in-out infinite alternate;
+}
+
+.workflow-panel h2 {
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 14px 0 10px;
+  padding-right: 88px; /* Защита от наезда текста на Глаз Ктулху */
+  color: var(--accent);
+}
+
+.workflow-panel > p {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 280px;
+  padding-right: 76px;
+  margin: 0 0 18px;
+}
+
+.workflow-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.workflow-steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(22, 30, 61, 0.92);
+  padding: 11px 13px;
+  border: 2px solid #0b0f21;
+  border-radius: var(--radius);
+  box-shadow: var(--terraria-slot-shadow);
+  transition: transform .12s, border-color .12s, box-shadow .12s;
+}
+
+.workflow-steps li:hover {
+  transform: translateX(4px);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.workflow-steps li > span {
+  font: 700 10px/28px var(--font-pixel);
+  color: var(--accent);
+  background: #36488f;
+  border: 2px solid #0b0f21;
+  box-shadow: inset 0 0 0 1px #6780e0;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.workflow-steps strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.workflow-steps small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Слой травы и земли Terraria теперь привязан к нижнему блоку в потоке!
+   Он никогда не перекроет карточку 03 */
+.example-link {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12px;
+  margin: auto -25px 0;
+  margin-top: 24px;
+  padding: 20px 25px 16px;
+  border-top: 0;
+  background:
+    linear-gradient(
+      180deg,
+      #7be06c 0px,
+      #7be06c 3px,
+      #4ca845 3px,
+      #4ca845 9px,
+      #265922 9px,
+      #265922 12px,
+      #593a22 12px,
+      #3b2412 100%
+    );
+}
+
+/* Дерево Terraria, растущее прямо на траве справа внизу */
+.example-link::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: -28px;
+  width: 30px;
+  height: 32px;
+  background: var(--sprite-tree) no-repeat center bottom / contain;
+  filter: drop-shadow(2px 2px 0 #090c1a);
+  animation: treeSway 3.2s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+  pointer-events: none;
+}
+
+.example-link:hover {
+  color: #ffffff;
+}
+
+
+.empty-state {
+  padding: 50px 20px 44px;
+  text-align: center;
+  border-bottom: 2px solid #0b0f21;
+  box-shadow: 0 2px 0 #3f529c;
+}
+
+.empty-orbit {
+  display: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.empty-state h2 {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 9px;
+}
+
+.empty-state p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.empty-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.empty-tags span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  color: var(--green);
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   REPORT SECTION & STATS GRID
+   ========================================================================== */
+.report-section {
+  padding-top: 35px;
+}
+
+.report-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.report-heading .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  color: var(--green);
+}
+
+.green-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--green);
+  box-shadow: 0 0 0 2px #0b0f21;
+}
+
+.report-heading h2 {
+  font-family: var(--font-pixel);
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 700;
+  margin: 9px 0 6px;
+  color: var(--accent);
+}
+
+.report-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 23px 0 20px;
+  border: 0;
+  background: transparent;
+}
+
+.stat-item {
+  padding: 16px 18px;
+  background: linear-gradient(180deg, #354787 0%, #283669 100%);
+  border: 2px solid #0b0f21;
+  border-radius: var(--radius);
+  box-shadow: var(--terraria-panel-shadow);
+}
+
+.stat-label {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.stat-item strong {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 8px 0 4px;
+  color: var(--accent);
+}
+
+.stat-item small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.color-red {
+  color: var(--red) !important;
+}
+
+.color-amber {
+  color: var(--amber) !important;
+}
+
+.report-notices {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.notice {
+  padding: 10px 14px;
+  background: #1f2952;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   TOOLBAR & EVENT CARDS
+   ========================================================================== */
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 17px 0 21px;
+  flex-wrap: wrap;
+}
+
+.severity-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: var(--radius);
+  padding: 5px;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.filter-tab:hover {
+  color: var(--accent);
+}
+
+.filter-tab.selected {
+  background: var(--surface-2);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 2px #ffe84c;
+}
+
+.filter-tab > span {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #171f3d;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.search-controls {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: var(--radius);
+  padding: 0 12px;
+  min-height: 38px;
+  color: var(--accent);
+  background: var(--slot-bg);
+}
+
+.search-box input {
+  width: 165px;
+  background: none;
+  border: 0;
+  outline: none;
+  color: #ffffff;
+  font-size: 12px;
+  min-width: 0;
+}
+
+.search-box input::placeholder {
+  color: var(--faint);
+}
+
+select {
+  max-width: 190px;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: var(--radius);
+  background: var(--slot-bg);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 0 26px 0 12px;
+  min-height: 38px;
+  font-size: 12px;
+}
+
+.group-list-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.group-list-label span:last-child {
+  letter-spacing: 0;
+  font-family: var(--font);
+  font-size: 11px;
+}
+
+.groups-list {
+  display: grid;
+  gap: 12px;
+}
+
+.event-card {
+  border: 2px solid #0b0f21;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #354787 0%, #283669 100%);
+  box-shadow: var(--terraria-panel-shadow);
+  overflow: hidden;
+}
+
+.event-card > summary {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  list-style: none;
+  padding: 16px 19px;
+  cursor: pointer;
+}
+
+.event-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-card > summary:hover {
+  background: rgba(73, 95, 181, 0.45);
+}
+
+.level-badge {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 2px solid #0b0f21;
+  background: #9e2031;
+  box-shadow: inset 0 0 0 1px #ff8592;
+  color: #ffffff;
+  padding: 5px 8px;
+  align-self: flex-start;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.level-badge.warn {
+  background: #9c6c19;
+  box-shadow: inset 0 0 0 1px #ffe84c;
+  color: var(--accent);
+}
+
+.event-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-title {
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 700;
+  display: block;
+}
+
+.event-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.event-count {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.event-card > summary > .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+  transition: transform .15s;
+}
+
+.event-card[open] > summary > .icon {
+  transform: rotate(180deg);
+}
+
+.event-details {
+  padding: 0 19px 19px;
+  border-top: 2px solid #0b0f21;
+  background: #232f5c;
+}
+
+.event-message {
+  font: 12px/1.6 var(--font-mono);
+  color: #ff9ea8;
+  background: #161c38;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-left: 4px solid var(--red);
+  border-radius: 4px;
+  margin: 16px 0 17px;
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 24px;
+}
+
+.detail-label {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.diagnosis-explanation {
+  font-size: 13px;
+  color: #ffffff;
+  margin: 0 0 13px;
+}
+
+.check-steps {
+  padding-left: 18px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.check-steps li {
+  padding-left: 4px;
+  margin: 7px 0;
+}
+
+.trace-code {
+  margin: 0;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: 4px;
+  background: #12172e;
+  padding: 12px;
+  color: #b8c7f5;
+  font: 11px/1.7 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 240px;
+  overflow: auto;
+  tab-size: 2;
+}
+
+.pattern-note {
+  font-size: 11px;
+  color: var(--faint);
+  margin: 11px 0 0;
+}
+
+.no-results {
+  padding: 32px 10px;
+  text-align: center;
+  border: 2px dashed #556bc2;
+  background: var(--slot-bg);
+  border-radius: var(--radius);
+  color: var(--green);
+}
+
+.no-results > .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.no-results h3 {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 12px 0 6px;
+  color: var(--accent);
+}
+
+.no-results p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.evidence-note {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 16px 0 0;
+}
+
+/* ==========================================================================
+   HISTORY & FOOTER
+   ========================================================================== */
+.history-section {
+  padding: 29px 0 26px;
+}
+
+.history-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.history-heading h2 {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--accent);
+}
+
+.count-badge {
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.history-heading p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+.history-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 17px 0 0;
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid #0b0f21;
+  background: linear-gradient(180deg, #354787 0%, #283669 100%);
+  box-shadow: var(--terraria-panel-shadow);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  color: #ffffff;
+  text-align: left;
+  width: 100%;
+  transition: transform .12s, box-shadow .12s;
+}
+
+.history-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.history-item > .icon {
+  color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+
+.history-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  display: block;
+}
+
+.history-item-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  white-space: nowrap;
+}
+
+.footer {
+  padding: 20px 0 26px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 2px solid #0b0f21;
+  box-shadow: inset 0 2px 0 #3f529c;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.footer > span:first-child {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.footer a {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.toast {
+  position: fixed;
+  bottom: 26px;
+  right: 28px;
+  z-index: 30;
+  background: #2c3b73;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-gold-shadow);
+  color: var(--accent);
+  font-weight: 700;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 13px;
+  max-width: calc(100vw - 35px);
+}
+
+/* ==========================================================================
+   GUIDE PAGE
+   ========================================================================== */
+.guide-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 32px 60px;
+}
+
+.guide-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 25px;
+  border-bottom: 2px solid #0b0f21;
+  box-shadow: 0 2px 0 #3f529c;
+}
+
+.guide-top .brand {
+  padding: 0;
+}
+
+.guide-hero {
+  padding: 35px 0 15px;
+}
+
+.guide-hero p {
+  color: var(--muted);
+  max-width: 720px;
+}
+
+.guide-index {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 28px;
+}
+
+.guide-index a {
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-panel-shadow);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.guide-index a:hover {
+  background: var(--surface-2);
+  box-shadow: var(--terraria-gold-shadow);
+}
+
+.lesson {
+  border-top: 2px solid #0b0f21;
+  box-shadow: inset 0 2px 0 #3f529c;
+  padding: 28px 0;
+}
+
+.lesson h2 {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--accent);
+}
+
+.lesson p, .lesson li {
+  color: #e4ecff;
+  font-size: 14px;
+}
+
+.lesson p {
+  max-width: 850px;
+}
+
+.lesson code {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  background: #171f3d;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: .9em;
+}
+
+.lesson pre {
+  background: #141b36;
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-slot-shadow);
+  border-radius: var(--radius);
+  padding: 18px;
+  overflow: auto;
+  color: #d6e2ff;
+  font: 12px/1.75 var(--font-mono);
+}
+
+.lesson pre code {
+  color: inherit;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.lesson-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.lesson-demo {
+  background: var(--surface);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-panel-shadow);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.lesson-demo output {
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-height: 20px;
+}
+
+.file-map {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: var(--slot-bg);
+  border: 2px solid #0b0f21;
+  box-shadow: var(--terraria-panel-shadow);
+}
+
+.file-map th, .file-map td {
+  padding: 12px;
+  border: 2px solid #0b0f21;
+  text-align: left;
+  color: #e4ecff;
+}
+
+.file-map th {
+  color: var(--accent);
+  background: var(--surface);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+}
+
+.file-map td:first-child {
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.step-number {
+  display: inline-block;
+  margin-right: 9px;
+  font: 700 10px/24px var(--font-pixel);
+  width: 26px;
+  border-radius: 4px;
+  border: 2px solid #0b0f21;
+  background: var(--surface-2);
+  box-shadow: var(--terraria-slot-shadow);
+  text-align: center;
+  vertical-align: middle;
+  color: var(--accent);
+}
+
+.learning-note {
+  border-left: 4px solid var(--accent);
+  background: rgba(25, 33, 66, 0.7);
+  padding: 10px 15px;
+  border-radius: 0 4px 4px 0;
+}
+
+.lesson-output {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   TERRARIA BOSS & HUD KEYFRAME ANIMATIONS
+   ========================================================================== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Плавный полёт Глаза Ктулху (Фаза 1) */
+@keyframes bossFloat {
+  0% {
+    transform: translateY(0px) rotate(-4deg);
+  }
+  100% {
+    transform: translateY(-9px) rotate(4deg);
+  }
+}
+
+/* Яростный рывок Глаза Ктулху во 2-й фазе при наведении */
+@keyframes eocPhaseTwoRage {
+  0% {
+    transform: scale(1.08) translate(0px, 0px) rotate(-8deg);
+  }
+  50% {
+    transform: scale(1.14) translate(-4px, 3px) rotate(6deg);
+  }
+  100% {
+    transform: scale(1.1) translate(3px, -4px) rotate(10deg);
+  }
+}
+
+/* Спокойное парение черепа Скелетрона */
+@keyframes skeletronIdle {
+  0% {
+    transform: translateY(2px) rotate(-3deg);
+  }
+  100% {
+    transform: translateY(-5px) rotate(3deg);
+  }
+}
+
+/* Вращающаяся атака Скелетрона / Стража Данжа при наведении */
+@keyframes skeletronSpin {
+  0% {
+    transform: rotate(0deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.05);
+  }
+}
+
+/* Покачивание дерева на ветру */
+@keyframes treeSway {
+  0% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(2deg);
+  }
+}
+
+/* Тряска дерева при рубке топором */
+@keyframes treeChop {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px) rotate(-4deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(4deg);
+  }
+}
+
+/* Биение Сердца ХП в статус-баре */
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+}
+
+/* Перелив Звезды Маны */
+@keyframes starPulse {
+  0% {
+    transform: scale(0.92) rotate(-8deg);
+    filter: brightness(0.95);
+  }
+  100% {
+    transform: scale(1.1) rotate(8deg);
+    filter: brightness(1.25) drop-shadow(0 0 6px rgba(120, 170, 255, 0.7));
+  }
+}
+
+/* Дыхание и прыжок Гида */
+@keyframes npcBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes npcJump {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-7px);
+  }
+}
+
+/* Подпрыгивание Золотого сундука */
+@keyframes chestBounce {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-5px) scale(1.06);
+  }
+}
+
+/* ==========================================================================
+   MEDIA QUERIES
+   ========================================================================== */
+@media (min-width: 1600px) {
+  .main-content {
+    padding-right: 65px;
+    padding-left: 65px;
+  }
+  .hero {
+    padding-top: 42px;
+  }
+  .upload-panel {
+    padding: 28px 30px 23px;
+  }
+  .drop-zone {
+    min-height: 194px;
+  }
+  .workflow-panel {
+    padding: 28px 30px 0;
+  }
+  .example-link {
+    margin-left: -30px;
+    margin-right: -30px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media (max-width: 1150px) {
+  :root {
+    --sidebar-width: 210px;
+  }
+  .main-content {
+    padding: 0 27px;
+  }
+  .sidebar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .brand {
+    font-size: 11px;
+    padding: 0 4px;
+  }
+  .nav-link {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .upload-layout {
+    grid-template-columns: minmax(0, 1.45fr) minmax(250px, 1fr);
+    gap: 16px;
+  }
+  .upload-panel {
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+  .workflow-panel {
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+  .example-link {
+    margin-left: -19px;
+    margin-right: -19px;
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+  .form-actions {
+    gap: 7px;
+  }
+  .form-actions .button {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 11px;
+  }
+  .guide-link {
+    font-size: 11px;
+  }
+  .stats-grid .stat-item {
+    padding: 15px;
+  }
+  .search-box input {
+    width: 125px;
+  }
+}
+
+@media (max-width: 950px) {
+  .sidebar {
+    position: relative;
+    inset: auto;
+    width: auto;
+    padding: 17px 24px 12px;
+    border-right: 0;
+    border-bottom: 3px solid #0b0f21;
+    display: block;
+  }
+  .brand {
+    padding: 0;
+    font-size: 13px;
+  }
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+  .sidebar-label, .sidebar-bottom {
+    display: none;
+  }
+  .navigation {
+    flex-direction: row;
+    margin-top: 16px;
+    gap: 8px;
+    overflow: auto;
+  }
+  .nav-link {
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+  .nav-dot {
+    display: none;
+  }
+  .external-mark {
+    margin-left: 0;
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 0 26px;
+  }
+  .topbar {
+    height: 56px;
+  }
+  .hero {
+    padding: 29px 0 25px;
+  }
+  .hero h1 {
+    font-size: 22px;
+  }
+  .guide-link {
+    margin-top: 10px;
+  }
+  .upload-layout {
+    grid-template-columns: 1fr;
+  }
+  .empty-state {
+    padding: 46px 10px;
+  }
+  .results-toolbar {
+    gap: 12px;
+  }
+  .detail-columns {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 650px) {
+  .sidebar {
+    padding: 16px 18px 10px;
+  }
+  .navigation {
+    gap: 6px;
+    margin-top: 13px;
+  }
+  .nav-link {
+    font-size: 11px;
+    padding: 7px 10px;
+    gap: 6px;
+  }
+  .nav-link > .icon {
+    width: 14px;
+    height: 14px;
+  }
+  .main-content {
+    padding: 0 18px;
+  }
+  .topbar {
+    height: 48px;
+    font-size: 10px;
+  }
+  .online-state {
+    font-size: 8px;
+  }
+  .breadcrumb-slash {
+    margin: 0 7px;
+  }
+  .hero {
+    display: block;
+    padding: 26px 0 24px;
+  }
+  .eyebrow {
+    font-size: 8px;
+  }
+  .hero h1 {
+    font-size: 18px;
+    margin: 10px 0 9px;
+  }
+  .hero p {
+    font-size: 12px;
+    max-width: 320px;
+  }
+  .guide-link {
+    margin-top: 17px;
+    min-height: 36px;
+    font-size: 11px;
+  }
+  .upload-panel {
+    padding: 21px 18px 17px;
+  }
+  .workflow-panel {
+    padding: 19px 18px 0;
+  }
+  .example-link {
+    margin-left: -18px;
+    margin-right: -18px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .workflow-panel h2 {
+    font-size: 14px;
+    margin: 10px 0 8px;
+  }
+  .workflow-panel h2 br {
+    display: none;
+  }
+  .workflow-panel > p {
+    max-width: none;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+  .workflow-steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .workflow-steps li {
+    gap: 10px;
+  }
+  .form-actions .button {
+    font-size: 11px;
+  }
+  .form-actions .button-primary {
+    flex: 1.2;
+  }
+  .privacy-line {
+    font-size: 10px;
+    justify-content: flex-start;
+  }
+  .report-section {
+    padding-top: 26px;
+  }
+  .report-heading {
+    display: block;
+  }
+  .report-heading h2 {
+    font-size: 16px;
+  }
+  .report-actions {
+    margin-top: 14px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 18px;
+  }
+  .stat-item {
+    padding: 14px 16px !important;
+  }
+  .stat-item strong {
+    font-size: 18px;
+  }
+  .results-toolbar {
+    display: block;
+  }
+  .severity-tabs {
+    width: fit-content;
+  }
+  .filter-tab {
+    font-size: 10px;
+    padding: 0 9px;
+  }
+  .search-controls {
+    margin-top: 13px;
+    display: flex;
+    gap: 7px;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 0;
+    padding: 0 9px;
+  }
+  .search-box input {
+    width: 100%;
+    font-size: 11px;
+  }
+  .search-controls select {
+    width: 125px;
+    max-width: 42%;
+    font-size: 11px;
+    padding-left: 8px;
+    padding-right: 15px;
+  }
+  .event-card > summary {
+    padding: 14px 12px;
+    gap: 9px;
+  }
+  .level-badge {
+    font-size: 7px;
+    padding: 4px 5px;
+  }
+  .event-title {
+    font-size: 12px;
+  }
+  .event-subtitle {
+    font-size: 10px;
+    gap: 5px;
+  }
+  .event-count {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  .event-details {
+    padding: 0 12px 14px;
+  }
+  .detail-columns {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .event-message {
+    font-size: 11px;
+  }
+  .trace-code {
+    font-size: 10px;
+    max-height: 215px;
+  }
+  .history-heading h2 {
+    font-size: 12px;
+  }
+  .history-heading p {
+    font-size: 10px;
+    max-width: 225px;
+  }
+  .history-item-name {
+    max-width: 200px;
+    font-size: 12px;
+  }
+  .history-item-count {
+    font-size: 10px;
+  }
+  .footer {
+    font-size: 10px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .footer > span:nth-child(2) {
+    display: none;
+  }
+  .toast {
+    bottom: 18px;
+    right: 18px;
+    font-size: 11px;
+  }
+  .guide-content {
+    padding: 20px 18px 40px;
+  }
+  .guide-top {
+    gap: 15px;
+  }
+  .guide-top .button {
+    font-size: 10px;
+    padding: 0 10px;
+  }
+  .guide-top .brand {
+    font-size: 12px;
+  }
+  .guide-hero h1 {
+    font-size: 19px;
+  }
+  .lesson h2 {
+    font-size: 15px;
+  }
+  .lesson p, .lesson li {
+    font-size: 13px;
+  }
+  .lesson-grid {
+    grid-template-columns: 1fr;
+  }
+  .lesson pre {
+    font-size: 11px;
+    padding: 13px;
+  }
+  .file-map {
+    font-size: 11px;
+  }
+  .file-map th, .file-map td {
+    padding: 8px;
+  }
+  .file-map td:first-child {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *:before, *:after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>TerraTrace — разбор логов модов</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-crystal" viewBox="0 0 24 24"><path d="m12 2 8 7-3 11H7L4 9Z"/><path d="m12 2 3 7-3 11L9 9Zm-8 7h16"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8m-8 4h5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-3-3-7-3-10-1v15c3-2 7-2 10 1m0-15c3-3 7-3 10-1v15c-3-2-7-2-10 1Zm0 0v15"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v13m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V3Zm2 0v6h10V3M7 21v-8h10v8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  </svg>
+
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="TerraTrace, главная"><span class="brand-mark"><svg class="icon"><use href="#i-crystal"/></svg></span><span>Terra<span class="brand-light">Trace</span></span></a>
+    <div class="sidebar-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <nav class="navigation" aria-label="Основная навигация">
+      <a class="nav-link active" href="/" aria-current="page"><svg class="icon"><use href="#i-grid"/></svg>Разбор логов<span class="nav-dot"></span></a>
+      <a class="nav-link" href="#history"><svg class="icon"><use href="#i-clock"/></svg>История</a>
+      <a class="nav-link" href="/docs" target="_blank" rel="noopener"><svg class="icon"><use href="#i-code"/></svg>Документация API<span class="external-mark">↗</span></a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <section class="hero">
+    </section>
+
+    <section class="upload-layout" aria-label="Загрузка журнала">
+      <form id="logForm" class="panel upload-panel">
+        <div class="panel-heading"><div class="section-title"><svg class="icon"><use href="#i-file"/></svg><h2>Добавь журнал</h2></div></div>
+        <div class="input-tabs" role="tablist" aria-label="Способ загрузки">
+          <button class="input-tab selected" id="fileTab" type="button" role="tab" aria-selected="true" aria-controls="filePanel">Файл</button>
+          <button class="input-tab" id="textTab" type="button" role="tab" aria-selected="false" aria-controls="textPanel">Вставить текст</button>
+        </div>
+        <div id="filePanel" role="tabpanel" aria-labelledby="fileTab">
+          <label class="drop-zone" id="dropZone" for="logFile" tabindex="0">
+            <span class="upload-icon"><svg class="icon"><use href="#i-upload"/></svg></span>
+            <strong id="fileLabel">Перетащи сюда client.log</strong>
+            <span id="fileHint">или нажми, чтобы выбрать файл</span>
+            <span class="drop-meta">До 5 МиБ · не более 50 000 строк</span>
+          </label>
+          <button id="clearFile" class="text-button selected-file-clear" type="button" hidden>Убрать файл</button>
+        </div>
+        <div id="textPanel" role="tabpanel" aria-labelledby="textTab" hidden><label class="visually-hidden" for="logText">Текст журнала</label><textarea id="logText" spellcheck="false" placeholder="Вставь строки из client.log или server.log…"></textarea></div>
+        <div id="formError" class="form-error" role="alert" hidden></div>
+        <div class="form-actions"><button id="analyzeButton" class="button button-primary" type="submit" disabled><svg class="icon"><use href="#i-search"/></svg><span id="analyzeLabel">Разобрать лог</span><svg class="icon small"><use href="#i-arrow"/></svg></button><button id="demoButton" class="button button-secondary" type="button"><svg class="icon"><use href="#i-play"/></svg>Попробовать демо</button></div>
+      </form>
+
+      <aside class="panel workflow-panel">
+        <div class="workflow-top"><span class="eyebrow">ОТЧЁТ ДЛЯ РАЗРАБОТЧИКА</span><span class="mini-crystal">◇</span></div>
+        <h2> <br> <br> </h2>
+        <ol class="workflow-steps"><li><span>01</span><div><strong>Загрузи лог</strong><small>После тестового запуска мода</small></div></li><li><span>02</span><div><strong>Открой группу ошибок</strong><small>Повторы уже собраны вместе</small></div></li><li><span>03</span><div><strong>Проверь гипотезу в коде</strong><small>Подсказка всегда рядом со стеком</small></div></li></ol>
+        <a class="example-link" href="/api/logs/example"><svg class="icon small"><use href="#i-download"/></svg>Скачать пример журнала</a>
+      </aside>
+    </section>
+
+    <section id="emptyState" class="empty-state"><div class="empty-orbit"><svg class="icon"><use href="#i-code"/></svg><span></span></div><h2>Здесь появится разбор</h2><p>Начни со своего журнала или открой демо с ошибками тестового босса.</p><div class="empty-tags"><span>Код механик</span><span>Ресурсы</span><span>Совместимость</span></div></section>
+
+    <section id="reportSection" class="report-section" aria-label="Результат анализа" hidden>
+      <div class="report-heading"><div><div class="eyebrow"><span class="green-dot"></span> АНАЛИЗ ЗАВЕРШЁН</div><h2 id="reportFilename"></h2><p id="reportMeta" class="report-meta"></p></div><div class="report-actions"><button id="saveReport" type="button" class="button button-secondary compact"><svg class="icon"><use href="#i-save"/></svg>В историю</button><button id="exportTxt" type="button" class="button button-secondary compact"><svg class="icon"><use href="#i-download"/></svg>TXT</button><button id="exportJson" type="button" class="button button-quiet compact">JSON</button></div></div>
+      <div class="stats-grid"><div class="stat-item"><span class="stat-label">Ошибки</span><strong id="statErrors" class="color-red">0</strong><small>записей ERROR / FATAL</small></div><div class="stat-item"><span class="stat-label">Предупреждения</span><strong id="statWarnings" class="color-amber">0</strong><small>записей WARN</small></div><div class="stat-item"><span class="stat-label">Группы событий</span><strong id="statGroups">0</strong><small>с учётом повторов</small></div><div class="stat-item"><span class="stat-label">Строки журнала</span><strong id="statLines">0</strong><small>обработано в файле</small></div></div>
+      <div id="reportNotices" class="report-notices"></div>
+      <div class="results-toolbar"><div class="severity-tabs" aria-label="Уровень событий"><button type="button" data-level="all" class="filter-tab selected" aria-pressed="true">Все<span id="allCount">0</span></button><button type="button" data-level="error" class="filter-tab" aria-pressed="false">Ошибки</button><button type="button" data-level="WARN" class="filter-tab" aria-pressed="false">Предупреждения</button></div><div class="search-controls"><label class="search-box"><svg class="icon small"><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="Ошибка, ресурс, метод…" aria-label="Поиск по ошибкам"></label><label class="visually-hidden" for="modFilter">Фильтр по моду</label><select id="modFilter"><option value="">Все моды</option></select></div></div>
+      <div class="group-list-label"><span>СОБЫТИЯ</span><span id="visibleCount"></span></div>
+      <div id="groupsList" class="groups-list"></div>
+      <div id="noResults" class="no-results" hidden><svg class="icon"><use href="#i-check"/></svg><h3>Ничего не найдено</h3><p id="noResultsText">Попробуй изменить фильтры.</p></div>
+      <p class="evidence-note">Упоминание мода в стеке — основание для проверки, а не доказательство причины сбоя.</p>
+    </section>
+
+    <section id="history" class="history-section"><div class="history-heading"><div><h2>Последние отчёты <span id="historyCount" class="count-badge">0</span></h2><p>Сохраняются по кнопке «В историю» только в этом браузере.</p></div><button id="clearHistory" class="text-button" type="button" hidden>Очистить историю</button></div><div id="historyList" class="history-list"></div><p id="historyEmpty" class="history-empty"><svg class="icon small"><use href="#i-clock"/></svg>Сохранённых отчётов пока нет.</p></section>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
